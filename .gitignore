@@ -29,3 +29,6 @@ Thumbs.db
 .vscode/
 .idea/
 *.sql
+backend/uploads/*
+!backend/uploads/.gitkeep
+*.txt
