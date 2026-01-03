@@ -1,0 +1,16 @@
+Connected
+Columns in Users table:
+0: id (INTEGER)
+1: phone (VARCHAR(255))
+2: name (VARCHAR(255))
+3: role (VARCHAR(255))
+4: createdAt (DATETIME)
+5: updatedAt (DATETIME)
+6: flatOwnerName (VARCHAR(255))
+7: flatNumber (VARCHAR(255))
+8: wing (VARCHAR(255))
+9: profilePicture (VARCHAR(255))
+10: password (VARCHAR(255))
+11: status (VARCHAR(255))
+
+Users_backup table does not exist.

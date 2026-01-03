@@ -1,0 +1,31 @@
+# Node modules
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Build files
+frontend/dist/
+
+# Environment files
+.env
+backend/.env
+frontend/.env
+
+# Logs
+*.log
+error.log
+error_*.txt
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.sql
