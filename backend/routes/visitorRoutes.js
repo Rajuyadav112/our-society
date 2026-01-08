@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { logVisitor, getLogs } = require('../controllers/visitorController');
-const auth = require('../middleware/auth');
+const visitorController = require('../controllers/visitorController'); // Import the whole object
+const authMiddleware = require('../middleware/auth');
 
-router.post('/', auth, logVisitor);
-router.get('/', auth, getLogs);
+router.post('/', authMiddleware, visitorController.logVisitor); // Use existing property
+router.get('/', authMiddleware, visitorController.getLogs);   // Use existing property
+router.get('/export', visitorController.exportVisitors); // Add new export route. Consider adding authMiddleware if needed.
 
 module.exports = router;

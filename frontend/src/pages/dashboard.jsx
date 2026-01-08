@@ -3,7 +3,7 @@ import Navbar from "../components/navbar";
 import api from "../api/api";
 import { Link } from "react-router-dom";
 
-function Dashboard({ onLogout }) {
+function Dashboard() {
   const [user, setUser] = useState({ name: "User", role: "Resident" });
   const [stats, setStats] = useState({
     notices: 0,
@@ -12,6 +12,13 @@ function Dashboard({ onLogout }) {
   });
 
   useEffect(() => {
+    // Redirect watchman to their own dashboard if they land here
+    const savedUser = JSON.parse(localStorage.getItem("user") || "{}");
+    if (savedUser.role === 'watchman') {
+      window.location.href = "/watchman-dashboard"; // Using window.location to ensure full redirect
+      return;
+    }
+
     // Fetch user and stats
     const fetchData = async () => {
       try {
@@ -39,16 +46,20 @@ function Dashboard({ onLogout }) {
   }, []);
 
   return (
-    <div style={{ minHeight: '100vh', paddingBottom: '40px' }}>
-      <Navbar onLogout={onLogout} />
+    <div style={{ minHeight: '100vh', paddingBottom: '40px', paddingTop: '80px' }}>
+      <Navbar />
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
-        <header style={{ marginBottom: '40px' }}>
-          <h2 style={{ fontSize: '2.5rem', marginBottom: '8px', color: 'var(--text-color)' }}>Welcome back, {user.name} 👋</h2>
-          <p style={{ color: 'var(--text-dim)', fontSize: '1.2rem' }}>Here's what's happening in your society today.</p>
+      <div className="container" style={{ padding: '0 20px' }}>
+        <header style={{ marginBottom: '30px' }}>
+          <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', marginBottom: '8px', color: 'var(--text-color)' }}>
+            Welcome back, {user.name} 👋
+          </h2>
+          <p style={{ color: 'var(--text-dim)', fontSize: 'clamp(0.9rem, 3vw, 1.2rem)' }}>
+            Here's what's happening in your society today.
+          </p>
         </header>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+        <div className="grid-1-mobile" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
           {/* Notices Card */}
           <Link to="/notices" className="glass-panel" style={{ padding: '24px', transition: 'transform 0.2s', display: 'block', textDecoration: 'none', color: 'var(--text-color)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>

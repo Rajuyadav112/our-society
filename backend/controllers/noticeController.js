@@ -77,4 +77,24 @@ const deleteComment = async (req, res) => {
     }
 };
 
-module.exports = { getNotices, createNotice, addComment, deleteComment };
+const deleteNotice = async (req, res) => {
+    try {
+        const { noticeId } = req.params;
+        const userRole = req.user.role;
+
+        if (userRole !== 'admin') {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const notice = await Notice.findByPk(noticeId);
+        if (!notice) return res.status(404).json({ error: 'Notice not found' });
+
+        await notice.destroy();
+        res.json({ message: 'Notice deleted' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Failed to delete notice' });
+    }
+};
+
+module.exports = { getNotices, createNotice, addComment, deleteComment, deleteNotice };

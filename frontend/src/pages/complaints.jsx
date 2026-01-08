@@ -79,12 +79,22 @@ function Complaints() {
         }
     };
 
-    return (
-        <div style={{ minHeight: '100vh', paddingBottom: '40px' }}>
-            <Navbar onLogout={handleLogout} />
+    const handleDeleteComplaint = async (id) => {
+        if (!window.confirm("Are you sure you want to delete this complaint?")) return;
+        try {
+            await api.delete(`/complaints/${id}`);
+            fetchComplaints();
+        } catch (error) {
+            alert("Failed to delete complaint");
+        }
+    };
 
-            <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 20px' }}>
-                <h2 style={{ fontSize: '2rem', marginBottom: '24px' }}>🔧 Complaints & Issues</h2>
+    return (
+        <div style={{ minHeight: '100vh', paddingBottom: '40px', paddingTop: '80px' }}>
+            <Navbar />
+
+            <div className="container">
+                <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2rem)', marginBottom: '24px' }}>🔧 Complaints & Issues</h2>
 
                 {/* File Complaint Form */}
                 <div className="glass-panel" style={{ padding: '24px', marginBottom: '32px' }}>
@@ -137,6 +147,23 @@ function Complaints() {
                                     }}>
                                         {complaint.status}
                                     </span>
+                                    {user?.role === 'admin' && (
+                                        <button
+                                            onClick={() => handleDeleteComplaint(complaint.id)}
+                                            style={{
+                                                background: 'none',
+                                                border: 'none',
+                                                color: '#ff6b6b',
+                                                cursor: 'pointer',
+                                                fontSize: '1.2rem',
+                                                marginLeft: '10px',
+                                                padding: 0
+                                            }}
+                                            title="Delete Complaint"
+                                        >
+                                            🗑️
+                                        </button>
+                                    )}
                                 </div>
 
                                 <p style={{ lineHeight: '1.6', opacity: 0.9, marginBottom: '16px' }}>{complaint.description}</p>

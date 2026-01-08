@@ -54,10 +54,11 @@ function Register() {
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      minHeight: '100vh'
+      minHeight: '100vh',
+      padding: '20px'
     }}>
-      <div className="glass-panel" style={{ padding: '40px', width: '100%', maxWidth: '400px' }}>
-        <h2 style={{ marginBottom: '24px', textAlign: 'center', fontSize: '2rem' }}>Create Account</h2>
+      <div className="glass-panel" style={{ padding: 'clamp(20px, 5vw, 40px)', width: '100%', maxWidth: '400px' }}>
+        <h2 style={{ marginBottom: '24px', textAlign: 'center', fontSize: 'clamp(1.5rem, 5vw, 2rem)' }}>Create Account</h2>
 
         {error && (
           <div style={{

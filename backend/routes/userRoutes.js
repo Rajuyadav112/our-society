@@ -3,6 +3,7 @@ const router = express.Router();
 
 const {
   registerUser,
+  securityRegister,
   loginUser,
   adminLogin,
   forgotPassword,
@@ -17,6 +18,7 @@ const auth = require("../middleware/auth");
 const upload = require("../middleware/upload");
 
 router.post("/register", upload.single('profilePicture'), registerUser);
+router.post("/security-register", securityRegister);
 router.post("/login", loginUser);
 router.post("/admin-login", adminLogin);
 router.post("/forgot-password", forgotPassword);
@@ -40,5 +42,6 @@ router.post("/profile-picture", auth, upload.single('profilePicture'), uploadPro
 router.put("/profile", auth, updateUserProfile);
 router.get("/all", auth, getAllUsers);
 router.put("/:id/status", auth, updateUserStatus);
+router.delete("/:id", auth, require("../controllers/userController").deleteUser);
 
 module.exports = router;

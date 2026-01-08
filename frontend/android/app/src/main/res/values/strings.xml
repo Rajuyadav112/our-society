@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Our Society</string>
+    <string name="title_activity_main">Our Society</string>
+    <string name="package_name">com.oursociety.app</string>
+    <string name="custom_url_scheme">com.oursociety.app</string>
+</resources>

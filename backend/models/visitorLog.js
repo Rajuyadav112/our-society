@@ -11,6 +11,10 @@ const VisitorLog = sequelize.define('VisitorLog', {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    visitorPhone: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     purpose: {
         type: DataTypes.STRING,
         allowNull: false,

@@ -1,89 +1,48 @@
-import { useState, useEffect } from "react";
-import api from "../api/api";
+import { Link } from "react-router-dom";
 import Navbar from "../components/navbar";
 
 function WatchmanDashboard() {
-    const [visitorName, setVisitorName] = useState("");
-    const [purpose, setPurpose] = useState("");
-    const [flatNumber, setFlatNumber] = useState("");
-    const [wing, setWing] = useState("");
-    const [logs, setLogs] = useState([]);
-    const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        fetchLogs();
-    }, []);
-
-    const fetchLogs = async () => {
-        try {
-            const res = await api.get("/visitors");
-            setLogs(res.data);
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const handleEntry = async (e) => {
-        e.preventDefault();
-        if (!visitorName || !flatNumber || !wing) return;
-
-        try {
-            setLoading(true);
-            await api.post("/visitors", { visitorName, purpose, flatNumber, wing });
-            setVisitorName("");
-            setPurpose("");
-            setFlatNumber("");
-            setWing("");
-            fetchLogs();
-            alert("Entry Logged!");
-        } catch (err) {
-            alert("Failed to log entry");
-        } finally {
-            setLoading(false);
-        }
-    };
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
 
     return (
-        <div className="container" style={{ padding: '20px' }}>
-            <h1 className="page-title">Watchman Dashboard</h1>
+        <div style={{ minHeight: '100vh', paddingBottom: '40px', paddingTop: '80px' }}>
+            <Navbar />
 
-            <div className="glass-panel" style={{ padding: '24px', marginBottom: '32px' }}>
-                <h3>New Visitor Entry</h3>
-                <form onSubmit={handleEntry} style={{ display: 'grid', gap: '16px', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', marginTop: '16px' }}>
-                    <input className="input-field" placeholder="Visitor Name" value={visitorName} onChange={e => setVisitorName(e.target.value)} required />
-                    <input className="input-field" placeholder="Purpose" value={purpose} onChange={e => setPurpose(e.target.value)} />
-                    <input className="input-field" placeholder="Wing" value={wing} onChange={e => setWing(e.target.value)} required />
-                    <input className="input-field" placeholder="Flat Number" value={flatNumber} onChange={e => setFlatNumber(e.target.value)} required />
-                    <button type="submit" className="btn-primary" disabled={loading}>
-                        {loading ? "Logging..." : "Log Entry"}
-                    </button>
-                </form>
-            </div>
+            <div className="container" style={{ padding: '0 20px' }}>
+                <header style={{ marginBottom: '30px' }}>
+                    <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', marginBottom: '8px', color: 'var(--text-color)' }}>
+                        Welcome back, {user.name} 👋
+                    </h2>
+                    <p style={{ color: 'var(--text-dim)', fontSize: 'clamp(0.9rem, 3vw, 1.2rem)' }}>
+                        Security Dashboard
+                    </p>
+                </header>
 
-            <div className="glass-panel" style={{ padding: '24px' }}>
-                <h3>Recent Logs</h3>
-                <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '16px', color: 'white' }}>
-                    <thead>
-                        <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
-                            <th style={{ textAlign: 'left', padding: '8px' }}>Time</th>
-                            <th style={{ textAlign: 'left', padding: '8px' }}>Visitor</th>
-                            <th style={{ textAlign: 'left', padding: '8px' }}>Flat</th>
-                            <th style={{ textAlign: 'left', padding: '8px' }}>Purpose</th>
-                            <th style={{ textAlign: 'left', padding: '8px' }}>Guard</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {logs.map(log => (
-                            <tr key={log.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                                <td style={{ padding: '8px' }}>{new Date(log.entryTime).toLocaleString()}</td>
-                                <td style={{ padding: '8px' }}>{log.visitorName}</td>
-                                <td style={{ padding: '8px' }}>{log.wing}-{log.flatNumber}</td>
-                                <td style={{ padding: '8px' }}>{log.purpose}</td>
-                                <td style={{ padding: '8px' }}>{log.Watchman?.name || 'N/A'}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <div className="grid-1-mobile" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+                    {/* Visitor Management Card */}
+                    <Link to="/visitor-management" className="glass-panel" style={{ padding: '24px', transition: 'transform 0.2s', display: 'block', textDecoration: 'none', color: 'var(--text-color)', border: '1px solid var(--primary-color)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                            <h3 style={{ fontSize: '1.5rem', color: 'var(--primary-color)' }}>📝 Visitor Entry</h3>
+                            <span style={{ fontSize: '2rem' }}>👥</span>
+                        </div>
+                        <p style={{ color: 'var(--text-dim)' }}>Log new visitors and view visitor history.</p>
+                    </Link>
+
+                    {/* Profile Card */}
+                    <Link to="/profile" className="glass-panel" style={{ padding: '24px', display: 'block', textDecoration: 'none', color: 'var(--text-color)' }}>
+                        <h3 style={{ fontSize: '1.5rem', marginBottom: '16px' }}>👤 My Profile</h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span style={{ color: 'var(--text-dim)' }}>Role</span>
+                                <span style={{ fontWeight: '600' }}>{user.role}</span>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <span style={{ color: 'var(--text-dim)' }}>Phone</span>
+                                <span>{user.phone || "N/A"}</span>
+                            </div>
+                        </div>
+                    </Link>
+                </div>
             </div>
         </div>
     );

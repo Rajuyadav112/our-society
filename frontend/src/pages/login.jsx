@@ -3,7 +3,7 @@ import api from "../api/api";
 import { Link } from "react-router-dom";
 
 function Login({ onLogin }) {
-  const [isAdminLogin, setIsAdminLogin] = useState(false);
+  const [loginType, setLoginType] = useState("resident"); // 'resident', 'watchman', 'admin'
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState(""); // For admin login auto-creation
@@ -17,11 +17,11 @@ function Login({ onLogin }) {
       setError("Please enter phone number");
       return;
     }
-    if (isAdminLogin && !passkey) {
+    if (loginType === 'admin' && !passkey) {
       setError("Please enter admin passkey");
       return;
     }
-    if (!isAdminLogin && !password) {
+    if (loginType !== 'admin' && !password) {
       setError("Please enter password");
       return;
     }
@@ -31,16 +31,16 @@ function Login({ onLogin }) {
       setError("");
 
       let res;
-      if (isAdminLogin) {
+      if (loginType === 'admin') {
         res = await api.post("/users/admin-login", { phone, passkey, name });
       } else {
         res = await api.post("/users/login", { phone, password });
       }
 
       localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user)); // Store user info
+      localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      onLogin();
+      onLogin(res.data.user);
 
     } catch (err) {
       console.error(err);
@@ -50,18 +50,88 @@ function Login({ onLogin }) {
     }
   };
 
+  const getTitle = () => {
+    if (loginType === 'admin') return "🔐 Admin Login";
+    if (loginType === 'watchman') return "🛡️ Security Login";
+    return "👋 Welcome Back";
+  };
+
   return (
     <div style={{
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
       minHeight: '100vh',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      padding: '20px'
     }}>
-      <div className="glass-panel" style={{ padding: '40px', width: '100%', maxWidth: '400px' }}>
-        <h2 style={{ marginBottom: '24px', textAlign: 'center', fontSize: '2rem', color: 'var(--text-color)' }}>
-          {isAdminLogin ? "Admin Login" : "Welcome Back"}
+      <div className="glass-panel" style={{ padding: 'clamp(20px, 5vw, 40px)', width: '100%', maxWidth: '450px' }}>
+        <h2 style={{ marginBottom: '24px', textAlign: 'center', fontSize: 'clamp(1.5rem, 5vw, 2rem)', color: 'var(--text-color)' }}>
+          {getTitle()}
         </h2>
+
+        {/* Login Type Selector */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '8px',
+          marginBottom: '24px',
+          background: 'rgba(255,255,255,0.05)',
+          padding: '6px',
+          borderRadius: '12px'
+        }}>
+          <button
+            type="button"
+            onClick={() => setLoginType('resident')}
+            style={{
+              padding: '12px',
+              background: loginType === 'resident' ? 'var(--primary-color)' : 'transparent',
+              color: loginType === 'resident' ? 'white' : 'var(--text-dim)',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '600',
+              fontSize: '0.9rem',
+              transition: 'all 0.3s'
+            }}
+          >
+            🏠 Resident
+          </button>
+          <button
+            type="button"
+            onClick={() => setLoginType('watchman')}
+            style={{
+              padding: '12px',
+              background: loginType === 'watchman' ? 'var(--primary-color)' : 'transparent',
+              color: loginType === 'watchman' ? 'white' : 'var(--text-dim)',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '600',
+              fontSize: '0.9rem',
+              transition: 'all 0.3s'
+            }}
+          >
+            🛡️ Security
+          </button>
+          <button
+            type="button"
+            onClick={() => setLoginType('admin')}
+            style={{
+              padding: '12px',
+              background: loginType === 'admin' ? 'var(--primary-color)' : 'transparent',
+              color: loginType === 'admin' ? 'white' : 'var(--text-dim)',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontWeight: '600',
+              fontSize: '0.9rem',
+              transition: 'all 0.3s'
+            }}
+          >
+            🔐 Admin
+          </button>
+        </div>
 
         {error && (
           <div style={{
@@ -78,8 +148,24 @@ function Login({ onLogin }) {
           </div>
         )}
 
+        {/* Info Box for Watchman/Security */}
+        {loginType === 'watchman' && (
+          <div style={{
+            background: 'rgba(99, 102, 241, 0.1)',
+            color: '#818cf8',
+            padding: '12px',
+            borderRadius: '12px',
+            marginBottom: '20px',
+            textAlign: 'center',
+            border: '1px solid rgba(99, 102, 241, 0.2)',
+            fontSize: '0.9rem'
+          }}>
+            <strong>Note:</strong> Enter the Security ID provided by the Admin.
+          </div>
+        )}
+
         <form onSubmit={handleLogin}>
-          {isAdminLogin && (
+          {loginType === 'admin' && (
             <input
               className="input-field"
               type="text"
@@ -97,7 +183,7 @@ function Login({ onLogin }) {
             onChange={(e) => setPhone(e.target.value)}
           />
 
-          {isAdminLogin ? (
+          {loginType === 'admin' ? (
             <input
               className="input-field"
               type="password"
@@ -109,7 +195,7 @@ function Login({ onLogin }) {
             <input
               className="input-field"
               type="password"
-              placeholder="Password"
+              placeholder={loginType === 'watchman' ? "Security ID (e.g., SEC-XXXX)" : "Password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -121,27 +207,24 @@ function Login({ onLogin }) {
             style={{ width: '100%', marginTop: '8px' }}
             disabled={loading}
           >
-            {loading ? "Logging in..." : (isAdminLogin ? "Login as Admin" : "Login")}
+            {loading ? "Logging in..." : `Login as ${loginType === 'resident' ? 'Resident' : loginType === 'watchman' ? 'Security' : 'Admin'}`}
           </button>
         </form>
 
-        <div style={{ marginTop: '20px', textAlign: 'center', color: 'var(--text-dim)' }}>
-          <button
-            onClick={() => setIsAdminLogin(!isAdminLogin)}
-            style={{ background: 'none', border: 'none', color: 'var(--primary-color)', textDecoration: 'underline', cursor: 'pointer', fontWeight: '500' }}
-          >
-            {isAdminLogin ? "Not an admin? Resident Login" : "Login as Admin"}
-          </button>
-        </div>
-
-        {!isAdminLogin && (
-          <div style={{ marginTop: '12px', textAlign: 'center', color: 'var(--text-dim)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        {loginType === 'resident' && (
+          <div style={{ marginTop: '20px', textAlign: 'center', color: 'var(--text-dim)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <div>
               New user? <Link to="/register" style={{ fontWeight: 'bold', color: 'var(--primary-color)' }}>Register here</Link>
             </div>
             <div>
               <Link to="/forgot-password" style={{ fontSize: '0.9rem', color: 'var(--text-dim)' }}>Forgot Password?</Link>
             </div>
+          </div>
+        )}
+
+        {loginType === 'watchman' && (
+          <div style={{ marginTop: '20px', textAlign: 'center', color: 'var(--text-dim)' }}>
+            New Security Staff? <Link to="/security-register" style={{ fontWeight: 'bold', color: 'var(--primary-color)' }}>Register here</Link>
           </div>
         )}
 

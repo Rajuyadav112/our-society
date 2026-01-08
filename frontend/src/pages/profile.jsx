@@ -75,160 +75,160 @@ function Profile() {
         : "https://via.placeholder.com/150";
 
     return (
-        <div className="container" style={{ paddingBottom: '80px' }}>
+        <div style={{ minHeight: '100vh', paddingBottom: '80px', paddingTop: '80px' }}>
             <Navbar />
 
-            <div className="glass-panel" style={{ maxWidth: '600px', margin: '0 auto', padding: '40px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '24px', marginBottom: '32px' }}>
-                    <div style={{ position: 'relative' }}>
-                        <img
-                            src={profileImgUrl}
-                            alt="Profile"
-                            style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', border: '3px solid white' }}
-                        />
-                        <label htmlFor="profile-upload" style={{
-                            position: 'absolute', bottom: 0, right: 0,
-                            background: '#6366f1', color: 'white',
-                            borderRadius: '50%', width: '30px', height: '30px',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            cursor: 'pointer', border: '2px solid white'
-                        }}>
-                            📷
-                        </label>
-                        <input
-                            id="profile-upload"
-                            type="file"
-                            accept="image/*"
-                            style={{ display: 'none' }}
-                            onChange={handleImageUpload}
-                        />
-                    </div>
-                    <div>
-                        {isEditing ? (
-                            <input
-                                className="input-field"
-                                value={editData.name || ''}
-                                onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                                style={{ fontSize: '1.5rem', fontWeight: 'bold', width: '200px', marginBottom: '8px', padding: '4px' }}
+            <div className="container" style={{ display: 'flex', justifyContent: 'center' }}>
+                <div className="glass-panel" style={{ width: '100%', maxWidth: '600px', padding: 'clamp(20px, 5vw, 40px)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '24px', marginBottom: '32px', flexWrap: 'wrap', justifyContent: 'center', textAlign: 'center' }}>
+                        <div style={{ position: 'relative' }}>
+                            <img
+                                src={profileImgUrl}
+                                alt="Profile"
+                                style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', border: '3px solid white' }}
                             />
-                        ) : (
-                            <h2 style={{ fontSize: '2rem', margin: 0, color: 'var(--text-color)' }}>{user.name}</h2>
-                        )}
-                        <p style={{ color: 'var(--text-dim)', margin: '4px 0' }}>{user.role.toUpperCase()} - <span style={{ fontSize: '0.9em', color: user.status === 'approved' ? '#10b981' : '#f59e0b', fontWeight: '600' }}>{(user.status || 'Approved').toUpperCase()}</span></p>
-
-                        {isEditing ? (
-                            <div style={{ display: 'flex', gap: '8px' }}>
-                                <input
-                                    className="input-field"
-                                    style={{ width: '60px', padding: '4px' }}
-                                    placeholder="Wing"
-                                    value={editData.wing || ''}
-                                    onChange={(e) => setEditData({ ...editData, wing: e.target.value })}
-                                />
-                                <input
-                                    className="input-field"
-                                    style={{ width: '80px', padding: '4px' }}
-                                    placeholder="Flat"
-                                    value={editData.flatNumber || ''}
-                                    onChange={(e) => setEditData({ ...editData, flatNumber: e.target.value })}
-                                />
-                            </div>
-                        ) : (
-                            <p style={{ color: 'var(--text-dim)' }}>{user.wing} - {user.flatNumber}</p>
-                        )}
-                    </div>
-                    <button
-                        onClick={() => isEditing ? handleSave() : setIsEditing(true)}
-                        className="btn-primary"
-                        style={{ marginLeft: 'auto', padding: '8px 16px' }}
-                    >
-                        {isEditing ? "Save" : "Edit"}
-                    </button>
-                    {isEditing && (
-                        <button
-                            onClick={() => { setIsEditing(false); setEditData(user); }}
-                            style={{
-                                background: 'transparent',
-                                border: '1px solid currentColor',
-                                color: 'inherit',
-                                padding: '8px 12px',
-                                borderRadius: '8px',
-                                cursor: 'pointer',
-                                marginLeft: '8px'
-                            }}
-                        >
-                            Cancel
-                        </button>
-                    )}
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-
-                    <div className="card-item" style={{ color: 'var(--text-color)' }}>
-                        <h3 style={{ marginBottom: '12px' }}>Contact Info</h3>
-                        <p style={{ marginBottom: '8px' }}>Phone: {user.phone}</p>
-                        <div style={{ marginTop: '8px' }}>
-                            <label style={{ color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>Owner Name</label>
+                            <label htmlFor="profile-upload" style={{
+                                position: 'absolute', bottom: 0, right: 0,
+                                background: '#6366f1', color: 'white',
+                                borderRadius: '50%', width: '30px', height: '30px',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                cursor: 'pointer', border: '2px solid white'
+                            }}>
+                                📷
+                            </label>
+                            <input
+                                id="profile-upload"
+                                type="file"
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                                onChange={handleImageUpload}
+                            />
+                        </div>
+                        <div style={{ flex: '1', minWidth: '200px' }}>
                             {isEditing ? (
                                 <input
                                     className="input-field"
-                                    value={editData.flatOwnerName || ''}
-                                    onChange={(e) => setEditData({ ...editData, flatOwnerName: e.target.value })}
+                                    value={editData.name || ''}
+                                    onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                                    style={{ fontSize: '1.5rem', fontWeight: 'bold', width: '100%', marginBottom: '8px', padding: '4px' }}
                                 />
                             ) : (
-                                <p style={{ fontWeight: '500' }}>{user.flatOwnerName || "N/A"}</p>
+                                <h2 style={{ fontSize: '2rem', margin: 0, color: 'var(--text-color)' }}>{user.name}</h2>
+                            )}
+                            <p style={{ color: 'var(--text-dim)', margin: '4px 0' }}>{user.role.toUpperCase()} - <span style={{ fontSize: '0.9em', color: user.status === 'approved' ? '#10b981' : '#f59e0b', fontWeight: '600' }}>{(user.status || 'Approved').toUpperCase()}</span></p>
+
+                            {isEditing ? (
+                                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                                    <input
+                                        className="input-field"
+                                        style={{ width: '60px', padding: '4px' }}
+                                        placeholder="Wing"
+                                        value={editData.wing || ''}
+                                        onChange={(e) => setEditData({ ...editData, wing: e.target.value })}
+                                    />
+                                    <input
+                                        className="input-field"
+                                        style={{ width: '80px', padding: '4px' }}
+                                        placeholder="Flat"
+                                        value={editData.flatNumber || ''}
+                                        onChange={(e) => setEditData({ ...editData, flatNumber: e.target.value })}
+                                    />
+                                </div>
+                            ) : (
+                                <p style={{ color: 'var(--text-dim)' }}>{user.wing} - {user.flatNumber}</p>
+                            )}
+                        </div>
+                        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '10px' }}>
+                            <button
+                                onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+                                className="btn-primary"
+                                style={{ padding: '8px 16px' }}
+                            >
+                                {isEditing ? "Save" : "Edit Profile"}
+                            </button>
+                            {isEditing && (
+                                <button
+                                    onClick={() => { setIsEditing(false); setEditData(user); }}
+                                    style={{
+                                        background: 'transparent',
+                                        border: '1px solid currentColor',
+                                        color: 'inherit',
+                                        padding: '8px 12px',
+                                        borderRadius: '8px',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    Cancel
+                                </button>
                             )}
                         </div>
                     </div>
 
-                    <div className="card-item" style={{ color: 'var(--text-color)' }}>
-                        <h3 style={{ marginBottom: '12px' }}>Maintenance Status</h3>
-                        {/* Mock data for now, waiting for admin approval logic integration */}
-                        {user.status === 'approved' ? (
-                            <div style={{
-                                padding: '12px',
-                                background: 'rgba(255,165,0,0.2)',
-                                border: '1px solid orange',
-                                borderRadius: '8px',
-                                color: 'orange'
-                            }}>
-                                ⚠️ Pending: ₹1,200 (For Dec 2025)
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                        <div className="card-item" style={{ color: 'var(--text-color)' }}>
+                            <h3 style={{ marginBottom: '12px' }}>Contact Info</h3>
+                            <p style={{ marginBottom: '8px' }}>Phone: {user.phone}</p>
+                            <div style={{ marginTop: '8px' }}>
+                                <label style={{ color: 'var(--text-dim)', display: 'block', marginBottom: '4px' }}>Owner Name</label>
+                                {isEditing ? (
+                                    <input
+                                        className="input-field"
+                                        value={editData.flatOwnerName || ''}
+                                        onChange={(e) => setEditData({ ...editData, flatOwnerName: e.target.value })}
+                                    />
+                                ) : (
+                                    <p style={{ fontWeight: '500' }}>{user.flatOwnerName || "N/A"}</p>
+                                )}
                             </div>
-                        ) : (
-                            <div style={{
-                                padding: '12px',
-                                background: 'rgba(255,0,0,0.2)',
-                                border: '1px solid red',
-                                borderRadius: '8px',
-                                color: 'red'
-                            }}>
-                                🔒 Account Pending Approval by Admin
-                            </div>
-                        )}
-                    </div>
+                        </div>
 
-                    <div className="card-item" style={{ color: 'var(--text-color)' }}>
-                        <h3 style={{ marginBottom: '12px' }}>Settings</h3>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span>Dark Mode</span>
-                            <button
-                                onClick={toggleTheme}
-                                style={{
-                                    padding: '8px 24px',
-                                    background: darkMode ? 'var(--primary-color)' : '#e5e7eb',
-                                    color: darkMode ? '#fff' : '#1f2937',
-                                    border: 'none',
-                                    borderRadius: '20px',
-                                    cursor: 'pointer',
-                                    fontWeight: 'bold',
-                                    transition: 'all 0.3s'
-                                }}
-                            >
-                                {darkMode ? 'ON' : 'OFF'}
-                            </button>
+                        <div className="card-item" style={{ color: 'var(--text-color)' }}>
+                            <h3 style={{ marginBottom: '12px' }}>Maintenance Status</h3>
+                            {user.status === 'approved' ? (
+                                <div style={{
+                                    padding: '12px',
+                                    background: 'rgba(255,165,0,0.2)',
+                                    border: '1px solid orange',
+                                    borderRadius: '8px',
+                                    color: 'orange'
+                                }}>
+                                    ⚠️ Pending: ₹1,200 (For Dec 2025)
+                                </div>
+                            ) : (
+                                <div style={{
+                                    padding: '12px',
+                                    background: 'rgba(255,0,0,0.2)',
+                                    border: '1px solid red',
+                                    borderRadius: '8px',
+                                    color: 'red'
+                                }}>
+                                    🔒 Account Pending Approval by Admin
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="card-item" style={{ color: 'var(--text-color)' }}>
+                            <h3 style={{ marginBottom: '12px' }}>Settings</h3>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <span>Dark Mode</span>
+                                <button
+                                    onClick={toggleTheme}
+                                    style={{
+                                        padding: '8px 24px',
+                                        background: darkMode ? 'var(--primary-color)' : '#e5e7eb',
+                                        color: darkMode ? '#fff' : '#1f2937',
+                                        border: 'none',
+                                        borderRadius: '20px',
+                                        cursor: 'pointer',
+                                        fontWeight: 'bold',
+                                        transition: 'all 0.3s'
+                                    }}
+                                >
+                                    {darkMode ? 'ON' : 'OFF'}
+                                </button>
+                            </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>

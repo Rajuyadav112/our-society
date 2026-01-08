@@ -8,7 +8,9 @@ import Complaints from "./pages/complaints";
 import Bills from "./pages/bills";
 import Profile from "./pages/profile";
 import WatchmanDashboard from "./pages/watchmanDashboard";
+import VisitorManagement from "./pages/visitorManagement";
 import ForgotPassword from "./pages/forgotPassword";
+import SecurityRegister from "./pages/securityRegister";
 
 import AdminDashboard from "./pages/adminDashboard";
 import Messages from "./pages/messages";
@@ -28,11 +30,13 @@ function App() {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  const handleLogin = () => {
+  const handleLogin = (loggedInUser) => {
     setIsAuthenticated(true);
-    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const user = loggedInUser || JSON.parse(localStorage.getItem("user") || "{}");
     if (user.role === 'admin') {
       navigate("/admin-dashboard");
+    } else if (user.role === 'watchman') {
+      navigate("/watchman-dashboard");
     } else {
       navigate("/dashboard");
     }
@@ -58,11 +62,15 @@ function App() {
         path="/forgot-password"
         element={!isAuthenticated ? <ForgotPassword /> : <Navigate to="/dashboard" />}
       />
+      <Route
+        path="/security-register"
+        element={!isAuthenticated ? <SecurityRegister /> : <Navigate to="/dashboard" />}
+      />
 
       {/* Protected Routes */}
       <Route
         path="/dashboard"
-        element={isAuthenticated ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" />}
+        element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
       />
       <Route
         path="/notices"
@@ -87,6 +95,10 @@ function App() {
       <Route
         path="/watchman-dashboard"
         element={isAuthenticated ? <WatchmanDashboard /> : <Navigate to="/login" />}
+      />
+      <Route
+        path="/visitor-management"
+        element={isAuthenticated ? <VisitorManagement /> : <Navigate to="/login" />}
       />
 
       {/* Admin Routes */}

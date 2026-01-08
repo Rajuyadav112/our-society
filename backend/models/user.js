@@ -51,6 +51,15 @@ const User = sequelize.define("User", {
     otpExpires: {
         type: DataTypes.DATE,
         allowNull: true
+    },
+    lastSeen: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
+    },
+    securityId: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true // Unique security ID for watchman
     }
 });
 

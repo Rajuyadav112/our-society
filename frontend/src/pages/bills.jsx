@@ -48,12 +48,12 @@ function Bills() {
     };
 
     return (
-        <div style={{ minHeight: '100vh', paddingBottom: '40px' }}>
-            <Navbar onLogout={handleLogout} />
+        <div style={{ minHeight: '100vh', paddingBottom: '40px', paddingTop: '80px' }}>
+            <Navbar />
 
-            <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 20px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                    <h2 style={{ fontSize: '2rem' }}>💳 My Bills</h2>
+            <div className="container">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '15px' }}>
+                    <h2 style={{ fontSize: 'clamp(1.5rem, 5vw, 2rem)' }}>💳 My Bills</h2>
                     {user?.role === 'admin' && (
                         <button
                             onClick={handleSendReminders}

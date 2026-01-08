@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require('../models/user');
+const Message = require('../models/message');
 
 const ADMIN_PASSKEY = "ADMIN_SECRET_KEY_2024"; // Hardcoded for simplified demo
 
@@ -32,9 +33,54 @@ const registerUser = async (req, res) => {
   }
 };
 
+const securityRegister = async (req, res) => {
+  try {
+    const { name, phone } = req.body;
+
+    if (!name || !phone) {
+      return res.status(400).json({ error: "Name and Phone are required" });
+    }
+
+    let user = await User.findOne({ where: { phone } });
+    if (user) {
+      return res.status(400).json({ error: "User already registered with this phone" });
+    }
+
+    // Generate unique Security ID
+    const securityId = "SEC-" + Math.floor(1000 + Math.random() * 9000);
+
+    user = await User.create({
+      name,
+      phone,
+      role: "watchman",
+      securityId
+    });
+
+    // Notify Admin
+    const admin = await User.findOne({ where: { role: 'admin' } });
+    if (admin) {
+      await Message.create({
+        senderId: user.id, // System/User notification
+        receiverId: admin.id,
+        content: `🆕 New Security Guard Registered.\nName: ${name}\nPhone: ${phone}\nSecurity ID: ${securityId}\n\nPlease share this ID with the security guard for login.`
+      });
+    }
+
+    res.json({
+      message: "Security registered successfully",
+      securityId: securityId, // Returning for now, but UI will hide it
+      user
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Registration failed" });
+  }
+};
+
 const loginUser = async (req, res) => {
   try {
-    const { phone } = req.body;
+    const { phone, password } = req.body;
 
     if (!phone) {
       return res.status(400).json({ error: "Phone number is required" });
@@ -44,6 +90,17 @@ const loginUser = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
+    }
+
+    // Security Login Check
+    if (user.role === 'watchman') {
+      console.log(`[LOGIN DEBUG] Phone: ${phone}, Stored: '${user.securityId}', Received: '${password}'`);
+      if (!password) {
+        return res.status(400).json({ error: "Please enter your Security ID" });
+      }
+      if (user.securityId !== password) {
+        return res.status(401).json({ error: "Invalid Security ID" });
+      }
     }
 
     const token = jwt.sign(
@@ -76,20 +133,20 @@ const adminLogin = async (req, res) => {
       return res.status(401).json({ error: "Invalid Admin Passkey" });
     }
 
-    // Check if admin user exists, or create on the fly
+    // Check if user exists
     let user = await User.findOne({ where: { phone } });
+
+    if (user && user.role !== 'admin') {
+      return res.status(403).json({ error: "This phone number is registered as a resident and cannot log in as an admin." });
+    }
+
     if (!user) {
+      // Create new dedicated admin
       user = await User.create({
         phone,
         name: name || "Admin",
         role: "admin"
       });
-    } else {
-      // Ensure they are admin
-      if (user.role !== 'admin') {
-        user.role = 'admin';
-        await user.save();
-      }
     }
 
     const token = jwt.sign(
@@ -225,8 +282,28 @@ const getAdminUser = async (req, res) => {
   }
 };
 
+const deleteUser = async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: "Access denied" });
+    const { id } = req.params;
+
+    const user = await User.findByPk(id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    // Optional: Delete related Data (Messages, Logs) if needed
+    // For now, strict delete
+    await user.destroy();
+
+    res.json({ message: "User deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to delete user" });
+  }
+};
+
 module.exports = {
   registerUser,
+  securityRegister,
   loginUser,
   adminLogin,
   forgotPassword,
@@ -235,5 +312,6 @@ module.exports = {
   updateUserProfile,
   getAllUsers,
   updateUserStatus,
-  getAdminUser
+  getAdminUser,
+  deleteUser
 };

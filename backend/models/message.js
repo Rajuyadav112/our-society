@@ -17,7 +17,27 @@ const Message = sequelize.define("Message", {
     },
     content: {
         type: DataTypes.TEXT,
-        allowNull: false
+        allowNull: true
+    },
+    imageUrl: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    fileUrl: { // For documents and other files
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    fileName: { // Original name of the document
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    reactions: {
+        type: DataTypes.JSON,
+        defaultValue: {}
+    },
+    isRead: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
     }
 });
 

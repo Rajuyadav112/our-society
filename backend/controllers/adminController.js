@@ -11,7 +11,7 @@ const getUsersOverview = async (req, res) => {
 
         const users = await User.findAll({
             where: {
-                role: 'resident'
+                role: ['resident', 'watchman']
             },
             attributes: ['id', 'name', 'phone', 'wing', 'flatNumber', 'flatOwnerName', 'profilePicture', 'role', 'status']
         });
