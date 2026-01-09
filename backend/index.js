@@ -5,9 +5,16 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+// Logger - VERY TOP
+app.use((req, res, next) => {
+  console.log(`[RAW] ${req.method} ${req.url} from ${req.ip}`);
+  next();
+});
+
 // Middleware
-app.use(cors());
+app.use(cors({ origin: '*' }));
 app.use(express.json());
+
 app.use('/uploads', express.static(require('path').join(__dirname, 'uploads')));
 
 // Import models so Sequelize registers them
@@ -64,8 +71,19 @@ async function start() {
     await sequelize.sync();
     console.log('All models synced');
 
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
+      const { networkInterfaces } = require('os');
+      const nets = networkInterfaces();
+      let localIP = 'localhost';
+      for (const name of Object.keys(nets)) {
+        for (const net of nets[name]) {
+          if (net.family === 'IPv4' && !net.internal) {
+            localIP = net.address;
+          }
+        }
+      }
       console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`Network URL: http://${localIP}:${PORT}`);
     });
   } catch (err) {
     console.error('Startup error:', err);

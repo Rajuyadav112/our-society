@@ -29,12 +29,39 @@ function Login({ onLogin }) {
     try {
       setLoading(true);
       setError("");
+      alert("Attempting login..."); // Debug alert
 
       let res;
       if (loginType === 'admin') {
         res = await api.post("/users/admin-login", { phone, passkey, name });
       } else {
-        res = await api.post("/users/login", { phone, password });
+        // Using native fetch to debug axios issue
+        const response = await fetch("https://society-app-debug-live.loca.lt/api/users/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Bypass-Tunnel-Reminder": "true"
+          },
+          body: JSON.stringify({ phone, password })
+        });
+
+        const contentType = response.headers.get("content-type");
+        let data;
+        let text = "";
+
+        if (contentType && contentType.includes("application/json")) {
+          data = await response.json();
+        } else {
+          text = await response.text();
+        }
+
+        if (!response.ok) {
+          // Throw explicit object with data needed for catch block
+          throw {
+            response: { data: data || { error: `Server Error ${response.status}: ${text.substring(0, 50)}` } }
+          };
+        }
+        res = { data };
       }
 
       localStorage.setItem("token", res.data.token);
@@ -44,7 +71,16 @@ function Login({ onLogin }) {
 
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.error || "Login failed");
+      let msg = "Login failed";
+
+      if (err.response?.data?.error) {
+        msg = err.response.data.error;
+      } else if (err.message) {
+        msg = err.message;
+      }
+
+      alert("Debug Error: " + msg); // Visible error for user
+      setError(msg);
     } finally {
       setLoading(false);
     }
